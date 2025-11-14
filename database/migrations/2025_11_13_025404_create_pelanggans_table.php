@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('pelanggan', function (Blueprint $table) {
             $table->string('id_pelanggan', 16)->primary()->nullable(false);
             $table->string('nama_pelanggan', 255)->nullable(false);
-            $table->longText('alamat')->nullable();
+            $table->string('alamat', 255)->nullable();
             $table->integer('no_kwh')->nullable(false);
+            $table->string('password', 255)->nullable(false);
             $table->timestamps();
         });
     }

@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login Page</title>
+    <title>Login Pelanggan</title>
     <style>
         * {
             box-sizing: border-box;
@@ -70,28 +69,6 @@
             outline: none;
         }
 
-        /* .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: #cbd5e1;
-            margin-top: 5px;
-        } */
-
-        /* .forgot-password {
-            display: block;
-            text-align: right;
-            font-size: 14px;
-            color: #818cf8;
-            text-decoration: none;
-            margin-top: 5px;
-        } */
-        /* 
-        .forgot-password:hover {
-            text-decoration: underline;
-        } */
-
         .login-btn {
             width: 100%;
             background: linear-gradient(to right, #6366f1, #8b5cf6);
@@ -124,30 +101,55 @@
         .signup-text a:hover {
             text-decoration: underline;
         }
+
+        .alert {
+            background-color: #dc2626;
+            padding: 10px;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 14px;
+        }
     </style>
 </head>
 
 <body>
     <div class="login-container">
-        <h2>Selamat Datang</h2>
-        <p>Silahkan jika sudah memiliki akun</p>
+        <h2>Selamat Datang Pelanggan</h2>
+        <p>Silakan masuk menggunakan akun Anda</p>
 
-        <form>
+        {{-- Pesan Error --}}
+        @if(session('error'))
+            <div class="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <form action="{{ route('action.login') }}" method="POST">
+            @csrf
+            @method('POST')
             <div class="form-group">
-                <label for="name">Nama Pengguna</label>
-                <input type="name" id="username" name="username" placeholder="Masukan Nama Pengguna" required>
+                <label for="nama_pelanggan">Nama Pengguna</label>
+                <input type="text" id="nama_pelanggan" name="nama_pelanggan" placeholder="Masukkan Nama Pengguna">
+                @error('nama_pelanggan')
+                    <small style="color: #fca5a5;">{{ $message }}</small>
+                @enderror
             </div>
 
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Masukan Kata Sandi" required>
+                <label for="password">Kata Sandi</label>
+                <input type="password" id="password" name="password" placeholder="Masukkan Kata Sandi">
+                @error('password')
+                    <small style="color: #fca5a5;">{{ $message }}</small>
+                @enderror
             </div>
 
             <button type="submit" class="login-btn">Log in</button>
 
             <p class="signup-text">
-                Don't have an account?
-                <a href="register">Sign Up</a>
+                Belum punya akun?
+                <a href="{{ route('register') }}">Daftar</a>
             </p>
         </form>
     </div>
