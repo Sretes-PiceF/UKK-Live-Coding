@@ -9,11 +9,18 @@ class Tagihan extends Model
     protected $table = 'tagihan';
     protected $primaryKey = 'id_tagihan';
     public $timestamps = true;
+    protected $keyType = 'string';
 
     protected $fillable = [
+        'id_tagihan',
         'bulan',
         'tahun',
         'jumlah_meter',
         'tarif_per_kwh',
     ];
+
+    public function totalTagihan()
+    {
+        return $this->hasMany(TotalTagihan::class, 'id_tagihan', 'id_tagihan');
+    }
 }

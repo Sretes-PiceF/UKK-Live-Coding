@@ -30,9 +30,9 @@
                             <label for="q" class="sr-only">Cari</label>
                             <input id="q" name="q" type="search" onkeyup="liveSearch()" placeholder="Cari pelanggan..."
                                 class="form-control ps-5 py-2 rounded-pill border-0" style="
-                                                            background-color: #f1f5f9;
-                                                            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
-                                                            transition: all 0.3s ease;"
+                                                                            background-color: #f1f5f9;
+                                                                            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+                                                                            transition: all 0.3s ease;"
                                 onfocus="this.style.backgroundColor='#e2e8f0';"
                                 onblur="this.style.backgroundColor='#f1f5f9';" />
                             <i class="fa-solid fa-magnifying-glass text-muted position-absolute"
@@ -50,6 +50,7 @@
                                     <th scope="col">Nama Pelanggan</th>
                                     <th scope="col">Alamat</th>
                                     <th scope="col">No KWH</th>
+                                    <th scope="col">Jumlah Meter</th>
                                     <th scope="col" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -60,6 +61,7 @@
                                         <td>{{ $p->nama_pelanggan }}</td>
                                         <td>{{ $p->alamat }}</td>
                                         <td>{{ $p->no_kwh }}</td>
+                                        <td>{{ $p->jumlah_meter }}</td>
                                         <td class="text-center">
                                             {{-- Tombol Edit --}}
                                             <a href="{{ route('admin.pelanggan.edit', $p->id_pelanggan) }}"

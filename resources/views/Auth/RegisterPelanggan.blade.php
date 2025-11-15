@@ -164,6 +164,12 @@
             </div>
 
             <div class="form-group">
+                <label for="jumlah_meter">Jumlah Meter</label>
+                <input type="number" id="jumlah_meter" name="jumlah_meter" placeholder="Masukan Jumlah Meter"
+                    value="{{ old('jumlah_meter') }}">
+            </div>
+
+            <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" placeholder="Masukan Kata Sandi">
             </div>

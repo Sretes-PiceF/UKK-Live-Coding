@@ -28,6 +28,7 @@ Route::middleware(PelangganMiddleware::class)->group(function () {
     Route::get('/pelanggan/tagihan', [PelangganController::class, 'Tagihan'])->name('pelanggan.tagihan');
     Route::get('/pelanggan/total', [PelangganController::class, 'Total'])->name('pelanggan.total');
 });
+
 Route::middleware(AdminMiddleware::class)->group(function () {
     // Protected routes for Admin
     //Admin Routes
@@ -40,6 +41,13 @@ Route::middleware(AdminMiddleware::class)->group(function () {
     Route::patch('/admin/pelanggan/update/{id}', [AdminController::class, 'updatePelanggan'])->name('admin.pelanggan.update');
     Route::delete('/admin/pelanggan/delete/{id}', [AdminController::class, 'deletePelanggan'])->name('admin.pelanggan.delete');
     Route::get('/admin/pelanggan/search', [AdminController::class, 'searchPelanggan'])->name('admin.pelanggan.search');
+
+    //Route Tagihan
+    Route::get('/admin/tagihan/create', [AdminController::class, 'createTagihan'])->name('admin.tagihan.create');
+    Route::post('/admin/tagihan/store', [AdminController::class, 'storeTagihan'])->name('admin.tagihan.store');
+    Route::get('/admin/tagihan/edit/{id}', [AdminController::class, 'editTagihan'])->name('admin.tagihan.edit');
+    Route::patch('/admin/tagihan/update/{id}', [AdminController::class, 'updateTagihan'])->name('admin.tagihan.update');
+    Route::delete('/admin/tagihan/delete/{id}', [AdminController::class, 'deleteTagihan'])->name('admin.tagihan.delete');
 
     //Route Pengaturan
     Route::get('/admin/pengaturan', [PengaturanController::class, 'edit'])->name('admin.pengaturan.edit');

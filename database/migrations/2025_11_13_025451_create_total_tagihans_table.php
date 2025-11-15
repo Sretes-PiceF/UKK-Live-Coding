@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('tanggal_bayar')->nullable(false);
             $table->integer('biaya_admin')->nullable(false);
             $table->integer('total_bayar')->nullable(false);
+            $table->enum('status_pembayaran', ['Lunas', 'Belum Lunas'])->default('Belum Lunas')->nullable(false);
             $table->timestamps();
 
             $table->foreign('id_tagihan')->references('id_tagihan')->on('tagihan')->onDelete('cascade');

@@ -25,10 +25,11 @@
                             <label for="q" class="sr-only">Cari</label>
                             <input id="q" name="q" type="search" value="{{ old('q', request('q')) }}"
                                 placeholder="Cari Tagihan..." class="form-control ps-5 py-2 rounded-pill border-0" style="
-                                            background-color: #f1f5f9; /* abu lembut */
-                                            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); /* dalam, bukan luar */
-                                            transition: all 0.3s ease;
-                                        " onfocus="this.style.backgroundColor='#e2e8f0';"
+                                                                                        background-color: #f1f5f9; /* abu lembut */
+                                                                                        box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); /* dalam, bukan luar */
+                                                                                        transition: all 0.3s ease;
+                                                                                    "
+                                onfocus="this.style.backgroundColor='#e2e8f0';"
                                 onblur="this.style.backgroundColor='#f1f5f9';" />
                             <i class="fa-solid fa-magnifying-glass text-muted position-absolute"
                                 style="top: 50%; left: 16px; transform: translateY(-50%);"></i>
@@ -39,6 +40,10 @@
                             <i class="fas fa-money-bill-wave me-2"></i> Atur Biaya Admin
                         </a>
                     </div>
+
+                    <a href="{{ route('admin.tagihan.create') }}" class="btn btn-success mb-3">
+                        <i class="fas fa-plus"></i> Tambah Tagihan
+                    </a>
 
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle shadow-sm"
@@ -54,50 +59,65 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Januari</td>
-                                    <td>2009</td>
-                                    <td>90</td>
-                                    <td>Rp 1.500</td>
-                                    <td>
-                                        <!-- Tombol Edit -->
-                                        <a href="#" class="btn btn-warning">
-                                            <i class="fas fa-pencil"></i>
-                                        </a>
+                                @forelse ($tagihan as $item)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $item->bulan }}</td>
+                                        <td>{{ $item->tahun }}</td>
+                                        <td>{{ $item->jumlah_meter }}</td>
+                                        <td>Rp {{ number_format($item->tarif_per_kwh, 0, ',', '.') }}</td>
+                                        <td>
 
-                                        <!-- Tombol Hapus -->
-                                        <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal"
-                                            data-bs-target="#hapusModal">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                            <!-- Tombol Edit -->
+                                            <a href="{{ route('admin.tagihan.edit', $item->id_tagihan) }}"
+                                                class="btn btn-warning">
+                                                <i class="fas fa-pencil"></i>
+                                            </a>
 
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="hapusModal" tabindex="-1">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h1 class="modal-title fs-5">Peringatan!!!</h1>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        Apakah anda sudah yakin ingin menghapus data ini?
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Tutup</button>
-                                                        <!-- Form Hapus dengan Metode DELETE -->
-                                                        <form action="#"> <button type="submit" class="btn btn-danger">
-                                                                Hapus
-                                                            </button>
-                                                        </form>
+                                            <!-- Tombol Hapus -->
+                                            <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal"
+                                                data-bs-target="#hapusModal{{ $item->id_tagihan }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+
+                                            <!-- Modal Hapus -->
+                                            <div class="modal fade" id="hapusModal{{ $item->id_tagihan }}" tabindex="-1">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5">Peringatan!!!</h1>
+                                                            <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Apakah anda yakin ingin menghapus tagihan ini?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Tutup</button>
+
+                                                            <form
+                                                                action="{{ route('admin.tagihan.delete', $item->id_tagihan) }}"
+                                                                method="POST">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger">
+                                                                    Hapus
+                                                                </button>
+                                                            </form>
+
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                </tr>
+
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">Tidak ada data.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

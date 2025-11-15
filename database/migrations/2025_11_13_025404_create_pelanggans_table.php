@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama_pelanggan', 255)->nullable(false);
             $table->string('alamat', 255)->nullable();
             $table->integer('no_kwh')->nullable(false);
+            $table->integer('jumlah_meter')->nullable(false);
             $table->string('password', 255)->nullable(false);
             $table->timestamps();
         });

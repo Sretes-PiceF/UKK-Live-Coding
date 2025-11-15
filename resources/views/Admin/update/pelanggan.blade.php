@@ -42,6 +42,18 @@
                                         value="{{ old('no_kwh', $pelanggan->no_kwh) }}" required>
                                 </div>
 
+                                <div class="mb-3">
+                                    <label for="no_kwh" class="form-label">No KWH</label>
+                                    <input type="text" class="form-control" id="no_kwh" name="no_kwh"
+                                        value="{{ old('no_kwh', $pelanggan->no_kwh) }}" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="jumlah_meter" class="form-label">Jumlah Meter</label>
+                                    <input type="number" class="form-control" id="jumlah_meter" name="jumlah_meter"
+                                        value="{{ old('jumlah_meter', $pelanggan->jumlah_meter) }}" required>
+                                </div>
+
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn btn-primary">Update Data</button>
                                     <a href="{{ route('admin.pelanggan') }}" class="btn btn-secondary">Kembali</a>

@@ -37,6 +37,7 @@ class AuthController extends Controller
             'nama_pelanggan' => 'required|string|max:255',
             'alamat' => 'required|string|max:255',
             'no_kwh' => 'required|digits_between:6,12|unique:pelanggan,no_kwh',
+            'jumlah_meter' => 'required|integer|min:0',
             'password' => 'required|string|min:6|max:255',
         ], [
             'nama_pelanggan.required' => 'Nama pelanggan wajib diisi.',
@@ -44,6 +45,8 @@ class AuthController extends Controller
             'no_kwh.required' => 'Nomor KWH wajib diisi.',
             'no_kwh.digits_between' => 'Nomor KWH harus terdiri dari 6-12 digit angka.',
             'no_kwh.unique' => 'Nomor KWH sudah terdaftar.',
+            'jumlah_meter.required' => 'Jumlah meter wajib diisi.',
+            'jumlah_meter.integer' => 'Jumlah meter harus berupa angka.',
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password minimal 6 karakter.',
         ]);
@@ -57,6 +60,7 @@ class AuthController extends Controller
                 'nama_pelanggan' => $validated['nama_pelanggan'],
                 'alamat' => $validated['alamat'],
                 'no_kwh' => $validated['no_kwh'],
+                'jumlah_meter' => $validated['jumlah_meter'],
                 'password' => bcrypt($validated['password']),
             ]);
 

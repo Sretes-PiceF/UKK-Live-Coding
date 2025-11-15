@@ -22,6 +22,7 @@ class Pelanggan extends Model implements AuthenticatableContract
         'nama_pelanggan',
         'alamat',
         'no_kwh',
+        'jumlah_meter',
         'password',
     ];
 
@@ -34,4 +35,9 @@ class Pelanggan extends Model implements AuthenticatableContract
         'password',
         'remember_token',
     ];
+
+    public function totalTagihan()
+    {
+        return $this->hasMany(TotalTagihan::class, 'id_pelanggan', 'id_pelanggan');
+    }
 }
