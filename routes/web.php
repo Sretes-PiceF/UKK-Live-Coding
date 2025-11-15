@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\PengaturanController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\PelangganMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -39,4 +40,8 @@ Route::middleware(AdminMiddleware::class)->group(function () {
     Route::patch('/admin/pelanggan/update/{id}', [AdminController::class, 'updatePelanggan'])->name('admin.pelanggan.update');
     Route::delete('/admin/pelanggan/delete/{id}', [AdminController::class, 'deletePelanggan'])->name('admin.pelanggan.delete');
     Route::get('/admin/pelanggan/search', [AdminController::class, 'searchPelanggan'])->name('admin.pelanggan.search');
+
+    //Route Pengaturan
+    Route::get('/admin/pengaturan', [PengaturanController::class, 'edit'])->name('admin.pengaturan.edit');
+    Route::post('/admin/pengaturan/update', [PengaturanController::class, 'update'])->name('admin.pengaturan.update');
 });
