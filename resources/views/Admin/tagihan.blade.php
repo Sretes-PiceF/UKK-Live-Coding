@@ -20,21 +20,42 @@
                     </ol>
 
 
+                    <!-- FORM SEARCH -->
                     <div class="mb-4">
-                        <form action="#" method="GET" class="position-relative w-100">
+                        <form action="{{ route('admin.tagihan') }}" method="GET" class="position-relative w-100">
                             <label for="q" class="sr-only">Cari</label>
                             <input id="q" name="q" type="search" value="{{ old('q', request('q')) }}"
-                                placeholder="Cari Tagihan..." class="form-control ps-5 py-2 rounded-pill border-0"
+                                placeholder="Cari berdasarkan bulan, tahun, atau jumlah meter..." 
+                                class="form-control ps-5 py-2 rounded-pill border-0"
                                 style="
-                                                                                                                                                                            background-color: #f1f5f9; /* abu lembut */
-                                                                                                                                                                            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); /* dalam, bukan luar */
-                                                                                                                                                                            transition: all 0.3s ease;
-                                                                                                                                                                        "
+                                    background-color: #f1f5f9;
+                                    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+                                    transition: all 0.3s ease;
+                                "
                                 onfocus="this.style.backgroundColor='#e2e8f0';"
                                 onblur="this.style.backgroundColor='#f1f5f9';" />
                             <i class="fa-solid fa-magnifying-glass text-muted position-absolute"
                                 style="top: 50%; left: 16px; transform: translateY(-50%);"></i>
+                            
+                            <!-- Tombol Clear Search (muncul jika ada keyword) -->
+                            @if(request('q'))
+                                <a href="{{ route('admin.tagihan') }}" 
+                                   class="btn btn-sm btn-outline-secondary position-absolute"
+                                   style="top: 50%; right: 16px; transform: translateY(-50%);">
+                                    <i class="fas fa-times"></i> Clear
+                                </a>
+                            @endif
                         </form>
+                        
+                        <!-- Info hasil pencarian -->
+                        @if(request('q'))
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    Menampilkan hasil pencarian untuk: <strong>"{{ request('q') }}"</strong>
+                                    ({{ $tagihan->count() }} data ditemukan)
+                                </small>
+                            </div>
+                        @endif
                     </div>
 
                     <a href="{{ route('admin.tagihan.create') }}" class="btn btn-success mb-3">

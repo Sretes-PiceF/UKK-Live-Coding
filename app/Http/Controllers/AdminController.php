@@ -28,18 +28,22 @@ class AdminController extends Controller
 
     public function PelangganAdmin(Request $request)
     {
-        $query = Pelanggan::query();
+        // Ambil keyword search dari input
+        $search = $request->input('q');
 
-        // Fitur pencarian
-        if ($request->has('q') && $request->q != '') {
-            $query->where('nama_pelanggan', 'like', '%' . $request->q . '%')
-                ->orWhere('no_kwh', 'like', '%' . $request->q . '%')
-                ->orWhere('alamat', 'like', '%' . $request->q . '%');
-        }
+        // Query dengan kondisi search dan pagination
+        $pelanggan = Pelanggan::query()
+            ->when($search, function ($query) use ($search) {
+                $query->where('nama_pelanggan', 'LIKE', "%{$search}%")
+                    ->orWhere('alamat', 'LIKE', "%{$search}%")
+                    ->orWhere('no_kwh', 'LIKE', "%{$search}%")
+                    ->orWhere('jumlah_meter', 'LIKE', "%{$search}%");
+            })
+            ->orderBy('nama_pelanggan', 'asc')
+            ->paginate(10)
+            ->appends(['q' => $search]); // Pertahankan keyword saat pindah halaman
 
-        $pelanggan = $query->paginate(10);
-
-        return view('Admin.pelanggan', compact('pelanggan'));
+        return view('admin.pelanggan', compact('pelanggan', 'search'));
     }
 
     // UPDATE - Menampilkan form edit
@@ -77,12 +81,45 @@ class AdminController extends Controller
 
 
     //Logika Tagihan
-    public function TagihanAdmin()
+    public function TagihanAdmin(Request $request)
     {
-        $query = Tagihan::query();
+        // Ambil keyword search dari input
+        $search = $request->input('q');
 
-        $tagihan = $query->paginate(10);
-        return view('admin.tagihan', compact('tagihan'));
+        // Query dengan kondisi search
+        $tagihan = Tagihan::query()
+            ->when($search, function ($query) use ($search) {
+                $query->where('bulan', 'LIKE', "%{$search}%")
+                    ->orWhere('tahun', 'LIKE', "%{$search}%")
+                    ->orWhere('jumlah_meter', 'LIKE', "%{$search}%");
+            })
+            ->orderBy('tahun', 'desc')
+            ->orderBy('bulan', 'desc')
+            ->get();
+
+        // Mapping bulan ke Indonesia
+        $bulan_map = [
+            'January' => 'Januari',
+            'February' => 'Februari',
+            'March' => 'Maret',
+            'April' => 'April',
+            'May' => 'Mei',
+            'June' => 'Juni',
+            'July' => 'Juli',
+            'August' => 'Agustus',
+            'September' => 'September',
+            'October' => 'Oktober',
+            'November' => 'November',
+            'December' => 'Desember',
+        ];
+
+        // Transform data
+        $tagihan->transform(function ($item) use ($bulan_map) {
+            $item->bulan_indo = $bulan_map[$item->bulan] ?? $item->bulan ?? '-';
+            return $item;
+        });
+
+        return view('admin.tagihan', compact('tagihan', 'search'));
     }
 
     public function createTagihan()

@@ -103,24 +103,21 @@ class PelangganController extends Controller
     public function Total(Request $request)
     {
         $idPelanggan = auth()->guard('pelanggan')->user()->id_pelanggan;
+
+        // Ambil keyword search
+        $search = $request->input('q');
+
         // 1. Auto-generate tagihan (Ini tetap berjalan normal)
         $this->autoGenerateTagihan($idPelanggan);
-
         $sekarang = CarbonAlias::now();
 
         // 2. Ambil data total tagihan dengan relasi dan filter tanggal
         $tagihan = \App\Models\TotalTagihan::with(['tagihan', 'pelanggan'])
             ->where('id_pelanggan', $idPelanggan)
-            // =======================================================
-            // PERBAIKAN PENTING: Eksklusi tagihan yang dihapus admin
             ->where('deleted_by_admin', false)
-            // =======================================================
             ->get()
-            // ... (Filter koleksi dan sorting lainnya tetap sama)
             ->filter(function ($item) use ($sekarang) {
-                // ... (Logika filter tanggal tetap sama)
                 if (!$item->tagihan) return false;
-
                 $bulanNama = $item->tagihan->bulan;
                 $tahunAngka = (int)$item->tagihan->tahun;
                 try {
@@ -128,40 +125,93 @@ class PelangganController extends Controller
                 } catch (\Exception $e) {
                     return false;
                 }
-
-                // FILTER: Tagihan hanya boleh tampil jika tanggalnya SAMA atau SEBELUM bulan saat ini
                 return $tanggalTagihan->lessThanOrEqualTo($sekarang->copy()->startOfMonth());
             })
+            // ===== TAMBAHAN: FILTER SEARCH (SETELAH FILTER TANGGAL) =====
+            ->when($search, function ($collection) use ($search) {
+                // Mapping bulan untuk search bahasa Indonesia
+                $bulan_map = [
+                    'January' => 'Januari',
+                    'February' => 'Februari',
+                    'March' => 'Maret',
+                    'April' => 'April',
+                    'May' => 'Mei',
+                    'June' => 'Juni',
+                    'July' => 'Juli',
+                    'August' => 'Agustus',
+                    'September' => 'September',
+                    'October' => 'Oktober',
+                    'November' => 'November',
+                    'December' => 'Desember',
+                ];
+
+                return $collection->filter(function ($item) use ($search, $bulan_map) {
+                    // Search di bulan (Inggris dan Indonesia)
+                    $bulanInggris = $item->tagihan->bulan ?? '';
+                    $bulanIndo = $bulan_map[$bulanInggris] ?? '';
+
+                    // Search di berbagai field
+                    return stripos($bulanInggris, $search) !== false ||
+                        stripos($bulanIndo, $search) !== false ||
+                        stripos($item->tagihan->tahun, $search) !== false ||
+                        stripos($item->status_pembayaran, $search) !== false ||
+                        stripos($item->total_bayar, $search) !== false;
+                });
+            })
+            // ============================================================
             ->sortBy(function ($item) {
-                // Sortir 1: Status (Belum bayar: 0, Dibayar: 1)
                 return $item->status_pembayaran == 'Belum bayar' ? 0 : 1;
             })
             ->sortByDesc(function ($item) {
-                // Sortir 2: Tanggal (Terbaru duluan)
                 $bulanNama = $item->tagihan->bulan;
                 $tahunAngka = (int)$item->tagihan->tahun;
                 return CarbonAlias::createFromFormat('F', $bulanNama)->day(1)->year($tahunAngka)->timestamp;
             })
             ->values();
 
+        // ===== TAMBAHAN: TRANSFORM BULAN KE INDONESIA =====
+        $bulan_map = [
+            'January' => 'Januari',
+            'February' => 'Februari',
+            'March' => 'Maret',
+            'April' => 'April',
+            'May' => 'Mei',
+            'June' => 'Juni',
+            'July' => 'Juli',
+            'August' => 'Agustus',
+            'September' => 'September',
+            'October' => 'Oktober',
+            'November' => 'November',
+            'December' => 'Desember',
+        ];
+
+        $tagihan->transform(function ($item) use ($bulan_map) {
+            if (isset($item->tagihan->bulan)) {
+                $item->tagihan->bulan_indo = $bulan_map[$item->tagihan->bulan] ?? $item->tagihan->bulan;
+            }
+            return $item;
+        });
+        // ==================================================
+
         // 3. Hitung ulang total dan jumlah Belum Bayar dari hasil filter yang bersih
         $totalBelumBayar = $tagihan->where('status_pembayaran', 'Belum bayar')->sum('total_bayar');
         $jumlahBelumBayar = $tagihan->where('status_pembayaran', 'Belum bayar')->count();
 
         if ($tagihan->isEmpty()) {
-            // Kirim collection kosong jika tidak ada data yang difilter
             return view('pelanggan.total', [
                 'tagihan' => collect([]),
                 'totalBelumBayar' => 0,
                 'jumlahBelumBayar' => 0,
-                'pesan' => 'Belum ada tagihan yang perlu dibayar.'
+                'search' => $search,
+                'pesan' => $search ? "Tidak ada hasil untuk pencarian '{$search}'" : 'Belum ada tagihan yang perlu dibayar.'
             ]);
         }
 
         return view('pelanggan.total', compact(
             'tagihan',
             'totalBelumBayar',
-            'jumlahBelumBayar'
+            'jumlahBelumBayar',
+            'search'
         ));
     }
 
