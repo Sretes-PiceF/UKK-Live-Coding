@@ -91,31 +91,43 @@
                                     </div>
                                 </div>
 
-                                <div class="row mt-4">
-                                    <div class="col-12">
-                                        <div class="d-flex justify-content-end gap-2">
-                                            <a href="{{ route('admin.tagihan') }}" class="btn btn-secondary">
-                                                <i class="fas fa-arrow-left me-1"></i> Kembali
-                                            </a>
-                                            <button type="submit" class="btn btn-success">
-                                                <i class="fas fa-save me-1"></i> Simpan
-                                            </button>
-                                        </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="biaya_admin" class="form-label">Biaya Admin (Rp)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp</span>
+                                        <input type="number" name="biaya_admin" id="biaya_admin" class="form-control"
+                                            min="0" step="0.01" required>
                                     </div>
                                 </div>
-                            </form>
                         </div>
                     </div>
-                </div>
-            </main>
 
-            <footer class="py-4 bg-light mt-auto">
-                <div class="container-fluid px-4">
-                    <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; Web Pembayaran Tagihan Listrik 2025</div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{{ route('admin.tagihan') }}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i> Kembali
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-1"></i> Simpan
+                                </button>
+                            </div>
+                        </div>
                     </div>
+                    </form>
                 </div>
-            </footer>
         </div>
+    </div>
+    </main>
+
+    <footer class="py-4 bg-light mt-auto">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-between small">
+                <div class="text-muted">Copyright &copy; Web Pembayaran Tagihan Listrik 2025</div>
+            </div>
+        </div>
+    </footer>
+    </div>
     </div>
 @endsection

@@ -17,6 +17,7 @@ class Tagihan extends Model
         'tahun',
         'jumlah_meter',
         'tarif_per_kwh',
+        'biaya_admin',
     ];
 
     public function totalTagihan()

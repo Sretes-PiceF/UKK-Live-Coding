@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('tahun')->nullable(false);
             $table->integer('jumlah_meter')->nullable(false);
             $table->integer('tarif_per_kwh')->nullable(false);
+            $table->integer('biaya_admin')->nullable(false);
             $table->timestamps();
         });
     }

@@ -29,7 +29,7 @@ Route::middleware(PelangganMiddleware::class)->group(function () {
     Route::get('/pelanggan/total', [PelangganController::class, 'Total'])->name('pelanggan.total');
 
     //Route Pembayaran
-    Route::get('/tagihan/bayar/{id}', [PelangganController::class, 'bayar'])->name('tagihan.bayar');
+    Route::post('/tagihan/bayar/{id}', [PelangganController::class, 'bayar'])->name('tagihan.bayar');
     Route::post('/tagihan/bayar-semua', [PelangganController::class, 'bayarSemua'])->name('tagihan.bayar.semua');
 });
 
@@ -53,10 +53,26 @@ Route::middleware(AdminMiddleware::class)->group(function () {
     Route::patch('/admin/tagihan/update/{id}', [AdminController::class, 'updateTagihan'])->name('admin.tagihan.update');
     Route::delete('/admin/tagihan/delete/{id}', [AdminController::class, 'deleteTagihan'])->name('admin.tagihan.delete');
 
-    //Route Pengaturan
-    Route::get('/admin/pengaturan', [PengaturanController::class, 'edit'])->name('admin.pengaturan.edit');
-    Route::post('/admin/pengaturan/update', [PengaturanController::class, 'update'])->name('admin.pengaturan.update');
-
     //Route Total Tagihan
     Route::delete('/admin/total/delete/{id}', [AdminController::class, 'destroy'])->name('admin.total.delete');
+});
+
+Route::get('/debug-tagihan', function () {
+    $pelanggan = auth()->guard('pelanggan')->user();
+
+    if ($pelanggan) {
+        $data = [
+            'pelanggan' => [
+                'id' => $pelanggan->id_pelanggan,
+                'jumlah_meter' => $pelanggan->jumlah_meter
+            ],
+            'total_tagihan' => \App\Models\TotalTagihan::with(['tagihan', 'pelanggan'])
+                ->where('id_pelanggan', $pelanggan->id_pelanggan)
+                ->get()->toArray()
+        ];
+
+        return response()->json($data);
+    }
+
+    return "User tidak login";
 });

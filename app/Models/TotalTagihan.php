@@ -16,11 +16,13 @@ class TotalTagihan extends Model
         'id_tagihan',
         'id_pelanggan',
         'tanggal_bayar',
-        'biaya_admin',
         'total_bayar',
         'status_pembayaran'
     ];
 
+    protected $attributes = [
+        'status_pembayaran' => 'Belum bayar',
+    ];
     public function pelanggan()
     {
         return $this->belongsTo(Pelanggan::class, 'id_pelanggan', 'id_pelanggan');

@@ -25,20 +25,15 @@
                             <label for="q" class="sr-only">Cari</label>
                             <input id="q" name="q" type="search" value="{{ old('q', request('q')) }}"
                                 placeholder="Cari Tagihan..." class="form-control ps-5 py-2 rounded-pill border-0" style="
-                                                                                        background-color: #f1f5f9; /* abu lembut */
-                                                                                        box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); /* dalam, bukan luar */
-                                                                                        transition: all 0.3s ease;
-                                                                                    "
+                                                                                                        background-color: #f1f5f9; /* abu lembut */
+                                                                                                        box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); /* dalam, bukan luar */
+                                                                                                        transition: all 0.3s ease;
+                                                                                                    "
                                 onfocus="this.style.backgroundColor='#e2e8f0';"
                                 onblur="this.style.backgroundColor='#f1f5f9';" />
                             <i class="fa-solid fa-magnifying-glass text-muted position-absolute"
                                 style="top: 50%; left: 16px; transform: translateY(-50%);"></i>
                         </form>
-                    </div>
-                    <div class="mb-4">
-                        <a href="{{ route('admin.pengaturan.edit') }}" class="btn btn-primary shadow-sm">
-                            <i class="fas fa-money-bill-wave me-2"></i> Atur Biaya Admin
-                        </a>
                     </div>
 
                     <a href="{{ route('admin.tagihan.create') }}" class="btn btn-success mb-3">
@@ -55,6 +50,7 @@
                                     <th scope="col">Tahun</th>
                                     <th scope="col">Jumlah Meter</th>
                                     <th scope="col">Tarif PerKWH</th>
+                                    <th scope="col">Biaya Admin</th>
                                     <th scope="col">Aksi</th>
                                 </tr>
                             </thead>
@@ -65,9 +61,9 @@
                                         <td>{{ $item->bulan }}</td>
                                         <td>{{ $item->tahun }}</td>
                                         <td>{{ $item->jumlah_meter }}</td>
+                                        <td>Rp {{ number_format($item->biaya_admin, 0, ',', '.') }}</td>
                                         <td>Rp {{ number_format($item->tarif_per_kwh, 0, ',', '.') }}</td>
                                         <td>
-
                                             <!-- Tombol Edit -->
                                             <a href="{{ route('admin.tagihan.edit', $item->id_tagihan) }}"
                                                 class="btn btn-warning">

@@ -74,6 +74,7 @@ class AdminController extends Controller
     }
 
 
+
     //Logika Tagihan
     public function TagihanAdmin()
     {
@@ -95,6 +96,7 @@ class AdminController extends Controller
             'tahun'         => 'required|numeric',
             'jumlah_meter'  => 'required|numeric',
             'tarif_per_kwh' => 'required|numeric',
+            'biaya_admin'   => 'required|numeric',
         ]);
 
         Tagihan::create([
@@ -103,6 +105,7 @@ class AdminController extends Controller
             'tahun'         => $request->tahun,
             'jumlah_meter'  => $request->jumlah_meter,
             'tarif_per_kwh' => $request->tarif_per_kwh,
+            'biaya_admin'   => $request->biaya_admin,
         ]);
 
         return redirect()->route('admin.tagihan')->with('success', 'Tagihan berhasil ditambahkan!');

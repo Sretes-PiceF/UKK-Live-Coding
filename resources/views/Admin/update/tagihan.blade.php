@@ -53,26 +53,36 @@
                                         <label for="bulan" class="form-label">Bulan</label>
                                         <select name="bulan" id="bulan" class="form-select" required>
                                             <option value="">Pilih Bulan</option>
-                                            <option value="Januari" {{ $tagihan->bulan == 'Januari' ? 'selected' : '' }}>Januari</option>
-                                            <option value="Februari" {{ $tagihan->bulan == 'Februari' ? 'selected' : '' }}>Februari</option>
-                                            <option value="Maret" {{ $tagihan->bulan == 'Maret' ? 'selected' : '' }}>Maret</option>
-                                            <option value="April" {{ $tagihan->bulan == 'April' ? 'selected' : '' }}>April</option>
+                                            <option value="Januari" {{ $tagihan->bulan == 'Januari' ? 'selected' : '' }}>
+                                                Januari</option>
+                                            <option value="Februari" {{ $tagihan->bulan == 'Februari' ? 'selected' : '' }}>
+                                                Februari</option>
+                                            <option value="Maret" {{ $tagihan->bulan == 'Maret' ? 'selected' : '' }}>Maret
+                                            </option>
+                                            <option value="April" {{ $tagihan->bulan == 'April' ? 'selected' : '' }}>April
+                                            </option>
                                             <option value="Mei" {{ $tagihan->bulan == 'Mei' ? 'selected' : '' }}>Mei</option>
-                                            <option value="Juni" {{ $tagihan->bulan == 'Juni' ? 'selected' : '' }}>Juni</option>
-                                            <option value="Juli" {{ $tagihan->bulan == 'Juli' ? 'selected' : '' }}>Juli</option>
-                                            <option value="Agustus" {{ $tagihan->bulan == 'Agustus' ? 'selected' : '' }}>Agustus</option>
-                                            <option value="September" {{ $tagihan->bulan == 'September' ? 'selected' : '' }}>September</option>
-                                            <option value="Oktober" {{ $tagihan->bulan == 'Oktober' ? 'selected' : '' }}>Oktober</option>
-                                            <option value="November" {{ $tagihan->bulan == 'November' ? 'selected' : '' }}>November</option>
-                                            <option value="Desember" {{ $tagihan->bulan == 'Desember' ? 'selected' : '' }}>Desember</option>
+                                            <option value="Juni" {{ $tagihan->bulan == 'Juni' ? 'selected' : '' }}>Juni
+                                            </option>
+                                            <option value="Juli" {{ $tagihan->bulan == 'Juli' ? 'selected' : '' }}>Juli
+                                            </option>
+                                            <option value="Agustus" {{ $tagihan->bulan == 'Agustus' ? 'selected' : '' }}>
+                                                Agustus</option>
+                                            <option value="September" {{ $tagihan->bulan == 'September' ? 'selected' : '' }}>
+                                                September</option>
+                                            <option value="Oktober" {{ $tagihan->bulan == 'Oktober' ? 'selected' : '' }}>
+                                                Oktober</option>
+                                            <option value="November" {{ $tagihan->bulan == 'November' ? 'selected' : '' }}>
+                                                November</option>
+                                            <option value="Desember" {{ $tagihan->bulan == 'Desember' ? 'selected' : '' }}>
+                                                Desember</option>
                                         </select>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label for="tahun" class="form-label">Tahun</label>
                                         <input type="number" class="form-control" id="tahun" name="tahun"
-                                            value="{{ old('tahun', $tagihan->tahun) }}" 
-                                            min="2020" max="2030" required>
+                                            value="{{ old('tahun', $tagihan->tahun) }}" min="2020" max="2030" required>
                                     </div>
                                 </div>
 
@@ -80,42 +90,54 @@
                                     <div class="col-md-6 mb-3">
                                         <label for="jumlah_meter" class="form-label">Jumlah Meter (kWh)</label>
                                         <input type="number" class="form-control" id="jumlah_meter" name="jumlah_meter"
-                                            value="{{ old('jumlah_meter', $tagihan->jumlah_meter) }}" 
-                                            min="0" step="0.01" required>
+                                            value="{{ old('jumlah_meter', $tagihan->jumlah_meter) }}" min="0" step="0.01"
+                                            required>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label for="tarif_per_kwh" class="form-label">Tarif Per KWH (Rp)</label>
                                         <div class="input-group">
                                             <span class="input-group-text">Rp</span>
-                                            <input type="number" class="form-control" id="tarif_per_kwh" name="tarif_per_kwh"
-                                                value="{{ old('tarif_per_kwh', $tagihan->tarif_per_kwh) }}" 
-                                                min="0" step="0.01" required>
+                                            <input type="number" class="form-control" id="tarif_per_kwh"
+                                                name="tarif_per_kwh"
+                                                value="{{ old('tarif_per_kwh', $tagihan->tarif_per_kwh) }}" min="0"
+                                                step="0.01" required>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="d-flex gap-2 mt-4">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-1"></i> Update Data
-                                    </button>
-                                    <a href="{{ route('admin.tagihan') }}" class="btn btn-secondary">
-                                        <i class="fas fa-arrow-left me-1"></i> Kembali
-                                    </a>
+                                <div class="col-md-6 mb-3">
+                                    <label for="biaya_admin" class="form-label">Biaya Admin (Rp)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp</span>
+                                        <input type="number" class="form-control" id="biaya_admin" name="biaya_admin"
+                                            value="{{ old('biaya_admin', $tagihan->biaya_admin) }}" min="0" step="0.01"
+                                            required>
+                                    </div>
                                 </div>
-                            </form>
                         </div>
-                    </div>
-                </div>
-            </main>
 
-            <footer class="py-4 bg-light mt-auto">
-                <div class="container-fluid px-4">
-                    <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; Web Pembayaran Tagihan Listrik 2025</div>
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Update Data
+                            </button>
+                            <a href="{{ route('admin.tagihan') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Kembali
+                            </a>
+                        </div>
+                        </form>
                     </div>
                 </div>
-            </footer>
         </div>
+        </main>
+
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid px-4">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">Copyright &copy; Web Pembayaran Tagihan Listrik 2025</div>
+                </div>
+            </div>
+        </footer>
+    </div>
     </div>
 @endsection
