@@ -21,6 +21,6 @@ class Tagihan extends Model
 
     public function totalTagihan()
     {
-        return $this->hasMany(TotalTagihan::class, 'id_tagihan', 'id_tagihan');
+        return $this->hasOne(TotalTagihan::class, 'id_tagihan', 'id_tagihan');
     }
 }

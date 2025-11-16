@@ -53,7 +53,7 @@ class AuthController extends Controller
 
         try {
             // ✅ Gunakan UUID atau random id yang aman
-            $id = mt_rand(1000000000000000, 9999999999999999);
+            $id = Str::random(16);
 
             $user = Pelanggan::create([
                 'id_pelanggan' => $id,
@@ -89,7 +89,7 @@ class AuthController extends Controller
 
         try {
             // ✅ Gunakan UUID atau random id yang aman
-            $id = mt_rand(1000000000000000, 9999999999999999);
+            $id = Str::random(16);
 
             $user = Admin::create([
                 'id_admin' => $id,

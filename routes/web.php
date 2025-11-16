@@ -27,6 +27,10 @@ Route::middleware(PelangganMiddleware::class)->group(function () {
 
     Route::get('/pelanggan/tagihan', [PelangganController::class, 'Tagihan'])->name('pelanggan.tagihan');
     Route::get('/pelanggan/total', [PelangganController::class, 'Total'])->name('pelanggan.total');
+
+    //Route Pembayaran
+    Route::get('/tagihan/bayar/{id}', [PelangganController::class, 'bayar'])->name('tagihan.bayar');
+    Route::post('/tagihan/bayar-semua', [PelangganController::class, 'bayarSemua'])->name('tagihan.bayar.semua');
 });
 
 Route::middleware(AdminMiddleware::class)->group(function () {
@@ -52,4 +56,7 @@ Route::middleware(AdminMiddleware::class)->group(function () {
     //Route Pengaturan
     Route::get('/admin/pengaturan', [PengaturanController::class, 'edit'])->name('admin.pengaturan.edit');
     Route::post('/admin/pengaturan/update', [PengaturanController::class, 'update'])->name('admin.pengaturan.update');
+
+    //Route Total Tagihan
+    Route::delete('/admin/total/delete/{id}', [AdminController::class, 'destroy'])->name('admin.total.delete');
 });

@@ -32,7 +32,6 @@
                                             <th>Tahun</th>
                                             <th>Jumlah Meter</th>
                                             <th>Tarif per kWh</th>
-                                            <th>Total Tagihan</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -43,9 +42,6 @@
                                                 <td>{{ $item->tahun }}</td>
                                                 <td>{{ $item->jumlah_meter }}</td>
                                                 <td>Rp {{ number_format($item->tarif_per_kwh, 0, ',', '.') }}</td>
-                                                <td>Rp
-                                                    {{ number_format($item->jumlah_meter * $item->tarif_per_kwh, 0, ',', '.') }}
-                                                </td>
                                             </tr>
                                         @endforeach
                                         @if($tagihan->isEmpty())

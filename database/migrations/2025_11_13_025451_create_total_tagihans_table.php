@@ -15,10 +15,10 @@ return new class extends Migration
             $table->string('id_total_tagihan', 16)->primary()->nullable(false);
             $table->string('id_tagihan', 16)->nullable(false);
             $table->string('id_pelanggan', 16)->nullable(false);
-            $table->date('tanggal_bayar')->nullable(false);
+            $table->date('tanggal_bayar')->nullable();
             $table->integer('biaya_admin')->nullable(false);
             $table->integer('total_bayar')->nullable(false);
-            $table->enum('status_pembayaran', ['Lunas', 'Belum Lunas'])->default('Belum Lunas')->nullable(false);
+            $table->enum('status_pembayaran', ['Dibayar', 'Belum bayar'])->default('Belum bayar')->nullable(false);
             $table->timestamps();
 
             $table->foreign('id_tagihan')->references('id_tagihan')->on('tagihan')->onDelete('cascade');

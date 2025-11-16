@@ -17,6 +17,8 @@ class Pelanggan extends Model implements AuthenticatableContract
     protected $table = 'pelanggan';
     protected $primaryKey = 'id_pelanggan';
     public $timestamps = true;
+    protected $keyType = 'string';
+    public $incrementing = false;
     protected $fillable = [
         'id_pelanggan',
         'nama_pelanggan',
