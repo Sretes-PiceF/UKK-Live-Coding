@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('tanggal_bayar')->nullable();
             $table->integer('total_bayar')->nullable(false);
             $table->enum('status_pembayaran', ['Dibayar', 'Belum bayar'])->default('Belum bayar')->nullable(false);
+            $table->boolean('deleted_by_admin')->default(false);
             $table->timestamps();
 
             $table->foreign('id_tagihan')->references('id_tagihan')->on('tagihan')->onDelete('cascade');

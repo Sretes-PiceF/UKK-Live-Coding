@@ -6,6 +6,7 @@ use App\Models\Pelanggan;
 use App\Models\Tagihan;
 use App\Models\TotalTagihan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AdminController extends Controller
@@ -146,6 +147,35 @@ class AdminController extends Controller
         return redirect()->route('admin.tagihan')->with('success', 'Tagihan berhasil dihapus!');
     }
 
+    public function index()
+    {
+        $tagihan = Tagihan::all();
+
+        // Mapping bulan ke Indonesia
+        $bulan_map = [
+            'January' => 'Januari',
+            'February' => 'Februari',
+            'March' => 'Maret',
+            'April' => 'April',
+            'May' => 'Mei',
+            'June' => 'Juni',
+            'July' => 'Juli',
+            'August' => 'Agustus',
+            'September' => 'September',
+            'October' => 'Oktober',
+            'November' => 'November',
+            'December' => 'Desember',
+        ];
+
+        // Transform data
+        $tagihan->transform(function ($item) use ($bulan_map) {
+            $item->bulan_indo = $bulan_map[$item->bulan] ?? $item->bulan ?? '-';
+            return $item;
+        });
+
+        return view('admin.tagihan', compact('tagihan'));
+    }
+
 
 
     public function TotalAdmin(Request $request)
@@ -200,28 +230,23 @@ class AdminController extends Controller
         ));
     }
 
+
     public function destroy($id)
     {
         try {
             $totalTagihan = TotalTagihan::findOrFail($id);
 
-            // Cek apakah sudah dibayar
             if ($totalTagihan->status_pembayaran == 'Dibayar') {
                 return redirect()->back()
                     ->with('error', 'Tidak dapat menghapus tagihan yang sudah dibayar!');
             }
 
-            $pelanggan = $totalTagihan->pelanggan->nama_pelanggan;
-            $bulan = $totalTagihan->tagihan->bulan;
-            $tahun = $totalTagihan->tagihan->tahun;
+            $totalTagihan->forceDelete();
 
-            $totalTagihan->delete();
-
-            return redirect()->back()
-                ->with('success', "Total tagihan untuk {$pelanggan} periode {$bulan} {$tahun} berhasil dihapus!");
+            return redirect()->back()->with('success', 'Tagihan berhasil dihapus.');
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+            Log::error("Hapus gagal: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 }

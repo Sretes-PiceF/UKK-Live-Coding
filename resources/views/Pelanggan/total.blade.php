@@ -86,6 +86,8 @@
                                                     $jumlahMeter = $item->pelanggan->jumlah_meter ?? 0;
                                                     $tarifPerKwh = $item->tagihan->tarif_per_kwh ?? 0;
                                                     $biayaAdmin = $item->tagihan->biaya_admin ?? 0;
+                                                    $jumlahMeter = $item->pelanggan->jumlah_meter ?? 0;
+                                                    $tarifPerKwh = $item->tagihan->tarif_per_kwh ?? 0;
                                                     $totalPerhitungan = ($jumlahMeter * $tarifPerKwh) + $biayaAdmin;
                                                     $bulan_tahun_string = $item->tagihan->bulan . ' ' . $item->tagihan->tahun;
                                                 @endphp

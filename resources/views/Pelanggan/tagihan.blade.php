@@ -44,9 +44,17 @@
                                         </thead>
                                         <tbody>
                                             @foreach($tagihan as $index => $item)
+                                                @php
+                                                    $bulan_tahun_string = $item->tagihan->bulan . ' ' . $item->tagihan->tahun;
+                                                @endphp
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
-                                                    <td>{{ \Carbon\Carbon::create()->month($item->bulan)->locale('id')->monthName }}
+                                                    <td>
+                                                        @if(isset($item->tagihan->bulan))
+                                                            {{ \Carbon\Carbon::createFromFormat('F Y', $bulan_tahun_string)->locale('id')->translatedFormat('F') }}
+                                                        @else
+                                                            -
+                                                        @endif
                                                     </td>
                                                     <td>{{ $item->tahun }}</td>
                                                     <td>{{ number_format($item->jumlah_meter, 0, ',', '.') }} kWh</td>

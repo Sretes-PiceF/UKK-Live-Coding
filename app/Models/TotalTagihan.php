@@ -17,9 +17,14 @@ class TotalTagihan extends Model
         'id_pelanggan',
         'tanggal_bayar',
         'total_bayar',
-        'status_pembayaran'
+        'status_pembayaran',
+        'deleted_by_admin',
     ];
 
+    protected $casts = [
+        'total_bayar' => 'integer',
+        'deleted_by_admin' => 'boolean',
+    ];
     protected $attributes = [
         'status_pembayaran' => 'Belum bayar',
     ];

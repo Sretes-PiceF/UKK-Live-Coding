@@ -24,11 +24,12 @@
                         <form action="#" method="GET" class="position-relative w-100">
                             <label for="q" class="sr-only">Cari</label>
                             <input id="q" name="q" type="search" value="{{ old('q', request('q')) }}"
-                                placeholder="Cari Tagihan..." class="form-control ps-5 py-2 rounded-pill border-0" style="
-                                                                                                        background-color: #f1f5f9; /* abu lembut */
-                                                                                                        box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); /* dalam, bukan luar */
-                                                                                                        transition: all 0.3s ease;
-                                                                                                    "
+                                placeholder="Cari Tagihan..." class="form-control ps-5 py-2 rounded-pill border-0"
+                                style="
+                                                                                                                                                                            background-color: #f1f5f9; /* abu lembut */
+                                                                                                                                                                            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); /* dalam, bukan luar */
+                                                                                                                                                                            transition: all 0.3s ease;
+                                                                                                                                                                        "
                                 onfocus="this.style.backgroundColor='#e2e8f0';"
                                 onblur="this.style.backgroundColor='#f1f5f9';" />
                             <i class="fa-solid fa-magnifying-glass text-muted position-absolute"
@@ -55,10 +56,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($tagihan as $item)
+                                @forelse ($tagihan as $index => $item)
                                     <tr>
+
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->bulan }}</td>
+                                        <td>
+                                            {{ $item->bulan }}
+                                        </td>
                                         <td>{{ $item->tahun }}</td>
                                         <td>{{ $item->jumlah_meter }}</td>
                                         <td>Rp {{ number_format($item->biaya_admin, 0, ',', '.') }}</td>

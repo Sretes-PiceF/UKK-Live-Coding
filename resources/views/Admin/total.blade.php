@@ -177,19 +177,6 @@
                                         </thead>
                                         <tbody>
                                             @foreach($totalTagihan as $index => $item)
-                                                @php
-                                                    // Konversi bulan ke nama
-                                                    $bulanNama = '';
-                                                    if (isset($item->tagihan->bulan) && is_numeric($item->tagihan->bulan)) {
-                                                        try {
-                                                            $bulanNama = \Carbon\Carbon::createFromDate(null, $item->tagihan->bulan, null)->locale('id')->monthName;
-                                                        } catch (Exception $e) {
-                                                            $bulanNama = 'Bulan ' . $item->tagihan->bulan;
-                                                        }
-                                                    } else {
-                                                        $bulanNama = $item->tagihan->bulan ?? '-';
-                                                    }
-                                                @endphp
                                                 <tr
                                                     class="{{ $item->status_pembayaran == 'Belum bayar' ? 'table-warning' : 'table-default' }}">
                                                     <td class="text-muted">
@@ -206,7 +193,7 @@
                                                             class="text-muted">{{ $item->pelanggan->id_pelanggan ?? '-' }}</small>
                                                     </td>
                                                     <td>
-                                                        <small class="text-dark">{{ $bulanNama }}
+                                                        <small class="text-dark">{{ bulan_indo($item->tagihan->bulan ?? '-') }}
                                                             {{ $item->tagihan->tahun ?? '-' }}</small>
                                                     </td>
                                                     <td class="text-end">
@@ -263,7 +250,7 @@
                     $bulanNama = '';
                     if (isset($item->tagihan->bulan) && is_numeric($item->tagihan->bulan)) {
                         try {
-                            $bulanNama = \Carbon\Carbon::createFromDate(null, $item->tagihan->bulan, null)->locale('id')->monthName;
+                            $bulanNama = Carbon::parse($item->bulan)->locale('id')->translatedFormat('F')
                         } catch (Exception $e) {
                             $bulanNama = 'Bulan ' . $item->tagihan->bulan;
                         }
