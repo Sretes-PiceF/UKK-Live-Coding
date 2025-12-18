@@ -39,27 +39,18 @@
                                                 <th>Tahun</th>
                                                 <th>Jumlah Meter</th>
                                                 <th>Tarif per kWh</th>
-                                                <th>Biaya admin</th>
+
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach($tagihan as $index => $item)
-                                                @php
-                                                    $bulan_tahun_string = $item->tagihan->bulan . ' ' . $item->tagihan->tahun;
-                                                @endphp
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
-                                                    <td>
-                                                        @if(isset($item->tagihan->bulan))
-                                                            {{ \Carbon\Carbon::createFromFormat('F Y', $bulan_tahun_string)->locale('id')->translatedFormat('F') }}
-                                                        @else
-                                                            -
-                                                        @endif
-                                                    </td>
+                                                    <td>{{ $item->bulan }}</td>
                                                     <td>{{ $item->tahun }}</td>
                                                     <td>{{ number_format($item->jumlah_meter, 0, ',', '.') }} kWh</td>
                                                     <td>Rp {{ number_format($item->tarif_per_kwh, 0, ',', '.') }}</td>
-                                                    <td>Rp {{ number_format($item->biaya_admin, 0, ',', '.') }}</td>
+                                                    
                                                 </tr>
                                             @endforeach
                                         </tbody>

@@ -7,6 +7,16 @@
 @endsection
 
 @section('main')
+    @php
+        // Define bulan mapping di awal supaya bisa dipakai di semua tempat
+        $bulan_map = [
+            'January' => 'Januari', 'February' => 'Februari', 'March' => 'Maret',
+            'April' => 'April', 'May' => 'Mei', 'June' => 'Juni',
+            'July' => 'Juli', 'August' => 'Agustus', 'September' => 'September',
+            'October' => 'Oktober', 'November' => 'November', 'December' => 'Desember',
+        ];
+    @endphp
+
     <div id="layoutSidenav">
         @include('template.sidebar_admin')
         <div id="layoutSidenav_content">
@@ -16,6 +26,20 @@
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item active">Halaman untuk melihat semua total tagihan pelanggan</li>
                     </ol>
+
+                    {{-- Notifikasi --}}
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
 
                     <!-- Card Statistik -->
                     <div class="row mb-4">
@@ -100,15 +124,13 @@
                                 </div>
                                 <div class="col-md-2">
                                     <input type="number" name="tahun" id="tahun" class="form-control form-control-sm"
-                                        value="{{ request('tahun') ?: date('Y') }}" placeholder="Tahun" min="2020"
-                                        max="2030">
+                                        value="{{ request('tahun') ?: date('Y') }}" placeholder="Tahun" min="2020" max="2030">
                                 </div>
                                 <div class="col-md-2">
                                     <select name="status" id="status" class="form-select form-select-sm">
                                         <option value="">Semua Status</option>
                                         <option value="Belum bayar" {{ request('status') == 'Belum bayar' ? 'selected' : '' }}>Belum Bayar</option>
-                                        <option value="Dibayar" {{ request('status') == 'Dibayar' ? 'selected' : '' }}>Sudah
-                                            Bayar</option>
+                                        <option value="Dibayar" {{ request('status') == 'Dibayar' ? 'selected' : '' }}>Sudah Bayar</option>
                                     </select>
                                 </div>
                                 <div class="col-md-3">
@@ -117,14 +139,10 @@
                                 </div>
                                 <div class="col-md-2">
                                     <select name="per_page" id="per_page" class="form-select form-select-sm">
-                                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 Data
-                                        </option>
-                                        <option value="25" {{ request('per_page', 10) == 25 ? 'selected' : '' }}>25 Data
-                                        </option>
-                                        <option value="50" {{ request('per_page', 10) == 50 ? 'selected' : '' }}>50 Data
-                                        </option>
-                                        <option value="0" {{ request('per_page', 10) == 0 ? 'selected' : '' }}>Semua Data
-                                        </option>
+                                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 Data</option>
+                                        <option value="25" {{ request('per_page', 10) == 25 ? 'selected' : '' }}>25 Data</option>
+                                        <option value="50" {{ request('per_page', 10) == 50 ? 'selected' : '' }}>50 Data</option>
+                                        <option value="0" {{ request('per_page', 10) == 0 ? 'selected' : '' }}>Semua Data</option>
                                     </select>
                                 </div>
                                 <div class="col-md-1">
@@ -147,7 +165,11 @@
                                 @endif
                             </div>
                             <div class="text-muted small">
-                                Total: {{ $totalTagihan->total() }} data
+                                @if(is_object($totalTagihan) && method_exists($totalTagihan, 'total'))
+                                    Total: {{ $totalTagihan->total() }} data
+                                @else
+                                    Total: {{ $totalTagihan->count() }} data
+                                @endif
                             </div>
                         </div>
                         <div class="card-body">
@@ -177,8 +199,10 @@
                                         </thead>
                                         <tbody>
                                             @foreach($totalTagihan as $index => $item)
-                                                <tr
-                                                    class="{{ $item->status_pembayaran == 'Belum bayar' ? 'table-warning' : 'table-default' }}">
+                                                @php
+                                                    $bulanIndo = $bulan_map[$item->tagihan->bulan ?? ''] ?? '-';
+                                                @endphp
+                                                <tr class="{{ $item->status_pembayaran == 'Belum bayar' ? 'table-warning' : 'table-default' }}">
                                                     <td class="text-muted">
                                                         @if(request('per_page', 10) == 0)
                                                             {{ $index + 1 }}
@@ -187,18 +211,14 @@
                                                         @endif
                                                     </td>
                                                     <td>
-                                                        <div class="fw-bold text-dark">{{ $item->pelanggan->nama_pelanggan ?? '-' }}
-                                                        </div>
-                                                        <small
-                                                            class="text-muted">{{ $item->pelanggan->id_pelanggan ?? '-' }}</small>
+                                                        <div class="fw-bold text-dark">{{ $item->pelanggan->nama_pelanggan ?? '-' }}</div>
+                                                        <small class="text-muted">{{ $item->pelanggan->id_pelanggan ?? '-' }}</small>
                                                     </td>
                                                     <td>
-                                                        <small class="text-dark">{{ bulan_indo($item->tagihan->bulan ?? '-') }}
-                                                            {{ $item->tagihan->tahun ?? '-' }}</small>
+                                                        <small class="text-dark">{{ $bulanIndo }} {{ $item->tagihan->tahun ?? '-' }}</small>
                                                     </td>
                                                     <td class="text-end">
-                                                        <span class="fw-bold text-primary">Rp
-                                                            {{ number_format($item->total_bayar ?? 0, 0, ',', '.') }}</span>
+                                                        <span class="fw-bold text-primary">Rp {{ number_format($item->total_bayar ?? 0, 0, ',', '.') }}</span>
                                                     </td>
                                                     <td class="text-center">
                                                         @if($item->status_pembayaran == 'Belum bayar')
@@ -226,7 +246,7 @@
                                 </div>
 
                                 <!-- Pagination -->
-                                @if(request('per_page', 10) != 0 && $totalTagihan->hasPages())
+                                @if(request('per_page', 10) != 0 && is_object($totalTagihan) && method_exists($totalTagihan, 'hasPages') && $totalTagihan->hasPages())
                                     <div class="d-flex justify-content-between align-items-center mt-3">
                                         <div class="text-muted small">
                                             Menampilkan {{ $totalTagihan->firstItem() }} - {{ $totalTagihan->lastItem() }}
@@ -247,23 +267,11 @@
             <!-- Modal Detail untuk setiap item -->
             @foreach($totalTagihan as $item)
                 @php
-                    $bulanNama = '';
-                    if (isset($item->tagihan->bulan) && is_numeric($item->tagihan->bulan)) {
-                        try {
-                            $bulanNama = Carbon::parse($item->bulan)->locale('id')->translatedFormat('F')
-                        } catch (Exception $e) {
-                            $bulanNama = 'Bulan ' . $item->tagihan->bulan;
-                        }
-                    } else {
-                        $bulanNama = $item->tagihan->bulan ?? '-';
-                    }
-
-                    // Hitung detail
+                    $bulanIndo = $bulan_map[$item->tagihan->bulan ?? ''] ?? '-';
                     $jumlahMeter = $item->pelanggan->jumlah_meter ?? 0;
                     $tarifPerKwh = $item->tagihan->tarif_per_kwh ?? 0;
                     $biayaAdmin = $item->tagihan->biaya_admin ?? 0;
                     $biayaListrik = $jumlahMeter * $tarifPerKwh;
-                    $totalBayar = $biayaListrik + $biayaAdmin;
                 @endphp
 
                 <div class="modal fade" id="detailModal{{ $item->id_total_tagihan }}" tabindex="-1" aria-hidden="true">
@@ -311,8 +319,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="text-muted">Jumlah Meter</td>
-                                                        <td><strong>{{ number_format($jumlahMeter, 0, ',', '.') }} kWh</strong>
-                                                        </td>
+                                                        <td><strong>{{ number_format($jumlahMeter, 0, ',', '.') }} kWh</strong></td>
                                                     </tr>
                                                 </table>
                                             </div>
@@ -331,9 +338,7 @@
                                                 <div class="row text-center">
                                                     <div class="col-md-4 border-end">
                                                         <small class="text-muted">Periode</small>
-                                                        <div class="fw-bold text-dark">{{ $bulanNama }}
-                                                            {{ $item->tagihan->tahun ?? '-' }}
-                                                        </div>
+                                                        <div class="fw-bold text-dark">{{ $bulanIndo }} {{ $item->tagihan->tahun ?? '-' }}</div>
                                                     </div>
                                                     <div class="col-md-4 border-end">
                                                         <small class="text-muted">Status</small>
@@ -353,7 +358,7 @@
                                                         <small class="text-muted">Tanggal Bayar</small>
                                                         <div class="fw-bold text-dark">
                                                             @if($item->tanggal_bayar)
-                                                                {{ \Carbon\Carbon::parse($item->tanggal_bayar)->format('d/m/Y H:i') }}
+                                                                {{ \Carbon\Carbon::parse($item->tanggal_bayar)->locale('id')->translatedFormat('d M Y H:i') }}
                                                             @else
                                                                 -
                                                             @endif
@@ -376,28 +381,22 @@
                                                 <tbody>
                                                     <tr>
                                                         <td width="60%">Pemakaian Listrik</td>
-                                                        <td class="text-end">{{ number_format($jumlahMeter, 0, ',', '.') }} kWh
-                                                        </td>
-                                                        <td class="text-end">× Rp {{ number_format($tarifPerKwh, 0, ',', '.') }}
-                                                        </td>
-                                                        <td class="text-end fw-bold">Rp
-                                                            {{ number_format($biayaListrik, 0, ',', '.') }}
-                                                        </td>
+                                                        <td class="text-end">{{ number_format($jumlahMeter, 0, ',', '.') }} kWh</td>
+                                                        <td class="text-end">× Rp {{ number_format($tarifPerKwh, 0, ',', '.') }}</td>
+                                                        <td class="text-end fw-bold">Rp {{ number_format($biayaListrik, 0, ',', '.') }}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>Biaya Admin</td>
                                                         <td class="text-end">-</td>
                                                         <td class="text-end">-</td>
-                                                        <td class="text-end fw-bold">Rp
-                                                            {{ number_format($biayaAdmin, 0, ',', '.') }}
-                                                        </td>
+                                                        <td class="text-end fw-bold">Rp {{ number_format($biayaAdmin, 0, ',', '.') }}</td>
                                                     </tr>
                                                     <tr class="table-primary">
                                                         <td class="fw-bold">TOTAL TAGIHAN</td>
                                                         <td class="text-end">-</td>
                                                         <td class="text-end">-</td>
                                                         <td class="text-end fw-bold fs-6 text-primary">
-                                                            Rp {{ number_format($totalBayar, 0, ',', '.') }}
+                                                            Rp {{ number_format($item->total_bayar, 0, ',', '.') }}
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -408,8 +407,7 @@
                             </div>
                             <div class="modal-footer">
                                 @if($item->status_pembayaran == 'Belum bayar')
-                                    <form action="{{ route('admin.total.delete', $item->id_total_tagihan) }}" method="POST"
-                                        class="me-auto">
+                                    <form action="{{ route('admin.total.delete', $item->id_total_tagihan) }}" method="POST" class="me-auto">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-outline-danger btn-sm"
@@ -417,10 +415,13 @@
                                             <i class="fas fa-trash me-1"></i>Hapus
                                         </button>
                                     </form>
-                                    <button type="button" class="btn btn-success btn-sm"
-                                        onclick="markAsPaid('{{ $item->id_total_tagihan }}')">
-                                        <i class="fas fa-check me-1"></i>Tandai Lunas
-                                    </button>
+                                    <form action="{{ route('admin.total', $item->id_total_tagihan) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success btn-sm"
+                                            onclick="return confirm('Tandai tagihan ini sebagai lunas?')">
+                                            <i class="fas fa-check me-1"></i>Tandai Lunas
+                                        </button>
+                                    </form>
                                 @endif
                                 <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
                                     <i class="fas fa-times me-1"></i>Tutup
@@ -441,14 +442,3 @@
         </div>
     </div>
 @endsection
-
-@push('scripts')
-    <script>
-        function markAsPaid(id) {
-            if (confirm('Tandai tagihan ini sebagai sudah dibayar?')) {
-                // Implementasi mark as paid
-                alert('Fitur mark as paid untuk ID: ' + id);
-            }
-        }
-    </script>
-@endpush

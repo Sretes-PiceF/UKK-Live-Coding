@@ -29,42 +29,74 @@ class PelangganController extends Controller
     {
         $sekarang = CarbonAlias::now();
         $bulanTagihanObj = $sekarang->copy()->subMonth();
-        $bulanNama = $bulanTagihanObj->format('F');
+
+        // --- Langkah 1: Ambil nama bulan dalam bahasa Inggris ---
+        $bulanNamaInggris = $bulanTagihanObj->format('F');
+
         $tahunAngka = $bulanTagihanObj->year;
+
+        // --- Langkah 2: Konversi nama bulan ke Bahasa Indonesia ---
+        $bulan_map = [
+            'January' => 'Januari',
+            'February' => 'Februari',
+            'March' => 'Maret',
+            'April' => 'April',
+            'May' => 'Mei',
+            'June' => 'Juni',
+            'July' => 'Juli',
+            'August' => 'Agustus',
+            'September' => 'September',
+            'October' => 'Oktober',
+            'November' => 'November',
+            'December' => 'Desember',
+        ];
+
+        // Variabel ini yang akan digunakan untuk pencarian dan penyimpanan di database
+        $bulanNama = $bulan_map[$bulanNamaInggris] ?? $bulanNamaInggris;
+
+        // Pastikan jika $bulanNamaInggris tidak terdaftar, maka tetap gunakan yang Inggris (sebagai fallback)
 
         $pelanggan = Pelanggan::find($idPelanggan);
         if (!$pelanggan) {
             return;
         }
 
-        // <<< BARU: Ambil Golongan Meter Pelanggan
-        $golonganMeterPelanggan = $pelanggan->jumlah_meter ?? 0;
+        // Ambil Golongan Meter Pelanggan (Meter Pemakaian Pelanggan)
+        $meterPemakaianPelanggan = $pelanggan->jumlah_meter ?? 0;
 
-        // ==============================================================
+        // --- LOGIKA PENENTUAN GOLONGAN METER UNTUK TAGIHAN MASTER (Sama seperti sebelumnya) ---
+        $golonganMeterAcuan = $meterPemakaianPelanggan;
+
+        if ($meterPemakaianPelanggan > 100 && $meterPemakaianPelanggan < 200) {
+            $golonganMeterAcuan = 100;
+        }
+        // -------------------------------------------------------------------------------------
+
         // 1. Cek & Dapatkan Tagihan Master untuk bulan target
-        // ==============================================================
-        $tagihanMaster = Tagihan::where('bulan', $bulanNama)
+        // PENCARIAN SEKARANG MENGGUNAKAN NAMA BULAN BAHASA INDONESIA (contoh: 'Oktober')
+        $tagihanMaster = Tagihan::where('bulan', $bulanNama) // Menggunakan $bulanNama (Indo)
             ->where('tahun', $tahunAngka)
-            // <<< PENTING: Filter Tagihan Master berdasarkan Golongan Pelanggan
-            ->where('jumlah_meter', $golonganMeterPelanggan)
+            ->where('jumlah_meter', $golonganMeterAcuan)
             ->first();
 
-        // Jika Tagihan Master bulan target belum dibuat oleh Admin:
+        // ... (Logika selanjutnya sama: mencari Tagihan Master Terakhir jika tidak ada, 
+        //      lalu membuat Tagihan Master baru jika diperlukan)
+
         if (!$tagihanMaster) {
-            // Cari Tagihan Master TERAKHIR yang PERNAH dibuat Admin DENGAN GOLONGAN YANG SAMA
-            $tagihanMasterTerakhir = Tagihan::where('jumlah_meter', $golonganMeterPelanggan) // <<< Filter Golongan Meter
+            // Cari Tagihan Master TERAKHIR yang PERNAH dibuat Admin DENGAN GOLONGAN ACUAN YANG SAMA
+            $tagihanMasterTerakhir = Tagihan::where('jumlah_meter', $golonganMeterAcuan)
                 ->orderBy('tahun', 'desc')
-                ->orderByRaw("FIELD(bulan, 'January','February','March','April','May','June','July','August','September','October','November','December') DESC")
+                ->orderByRaw("FIELD(bulan, 'Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember') DESC")
+                // PERHATIKAN: Saya juga MENGGANTI nama bulan di orderByRaw ke Bahasa Indonesia
                 ->first();
 
             if ($tagihanMasterTerakhir) {
-                // Gunakan data dari Tagihan Master terakhir ini sebagai acuan untuk membuat Tagihan Master baru
-
+                // Gunakan data dari Tagihan Master terakhir sebagai acuan untuk membuat yang baru
                 $tagihanMaster = Tagihan::create([
                     'id_tagihan'    => Str::random(16),
-                    'bulan'         => $bulanNama,
+                    'bulan'         => $bulanNama, // DISIMPAN DALAM BAHASA INDONESIA
                     'tahun'         => $tahunAngka,
-                    'jumlah_meter'  => $tagihanMasterTerakhir->jumlah_meter,      // Akan selalu sama dengan $golonganMeterPelanggan
+                    'jumlah_meter'  => $tagihanMasterTerakhir->jumlah_meter,
                     'tarif_per_kwh' => $tagihanMasterTerakhir->tarif_per_kwh,
                     'biaya_admin'   => $tagihanMasterTerakhir->biaya_admin
                 ]);
@@ -74,28 +106,41 @@ class PelangganController extends Controller
         if (!$tagihanMaster) {
             return;
         }
+
+        // Cek apakah Total Tagihan sudah ada
         $existingTotalTagihan = TotalTagihan::where('id_pelanggan', $idPelanggan)
             ->where('id_tagihan', $tagihanMaster->id_tagihan)
             ->where('deleted_by_admin', false)
             ->exists();
 
         if (!$existingTotalTagihan) {
-            $pemakaianKwhPelanggan = $pelanggan->jumlah_meter ?? 0;
 
-            $tarifPerKwhMaster = $tagihanMaster->tarif_per_kwh ?? 0;
+            // **!!! PENTING !!!**
+            // Pemakaian KWH yang digunakan untuk perhitungan adalah meter pemakaian **PELANGGAN**
+            // (bukan $tagihanMaster->jumlah_meter$)
+            $pemakaianKwhUntukHitungan = $meterPemakaianPelanggan; // Misal 125
+
+            $tarifPerKwhMaster = $tagihanMaster->tarif_per_kwh ?? 0; // Tarif diambil dari Master 100
             $biayaAdmin = $tagihanMaster->biaya_admin ?? 0;
 
-            $totalBayar = ($pemakaianKwhPelanggan * $tarifPerKwhMaster) + $biayaAdmin;
+            // Perhitungan Total Bayar: (Meter Pemakaian Pelanggan * Tarif Master) + Biaya Admin
+            // Contoh: (125 * Tarif Master 100) + Biaya Admin
+            $totalBayar = ($pemakaianKwhUntukHitungan * $tarifPerKwhMaster) + $biayaAdmin;
 
             // Buat Total Tagihan
             TotalTagihan::create([
                 'id_total_tagihan'  => Str::random(16),
                 'id_pelanggan'      => $idPelanggan,
-                'id_tagihan'        => $tagihanMaster->id_tagihan,
+                'id_tagihan'        => $tagihanMaster->id_tagihan, // Referensi ke Master 100
                 'total_bayar'       => $totalBayar,
                 'biaya_admin'       => $biayaAdmin,
                 'status_pembayaran' => 'Belum bayar',
                 'tanggal_bayar'     => null,
+                // Anda mungkin perlu menambahkan kolom 'pemakaian_kwh' ke TotalTagihan 
+                // untuk menyimpan $pemakaianKwhUntukHitungan (125) secara eksplisit
+                // agar fitur melihat detail tagihan bisa menampilkan pemakaian KWH yang sebenarnya.
+                // Saat ini saya asumsikan pemakaian KWH dilihat dari $pelanggan->jumlah_meter$ 
+                // pada saat melihat detail Tagihan.
             ]);
         }
     }
@@ -109,6 +154,7 @@ class PelangganController extends Controller
 
         // 1. Auto-generate tagihan (Ini tetap berjalan normal)
         $this->autoGenerateTagihan($idPelanggan);
+
         $sekarang = CarbonAlias::now();
 
         // 2. Ambil data total tagihan dengan relasi dan filter tanggal
